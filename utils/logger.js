@@ -2,35 +2,37 @@
 import fs from 'fs';
 import path from 'path';
 
-// Crée le dossier logs/ s'il n'existe pas encore
+// Crée le dossier logs/ à la racine du projet s'il n'existe pas
 const logsDir = path.join(process.cwd(), 'logs');
 fs.mkdirSync(logsDir, { recursive: true });
 
-// Les 3 fichiers de logs
-const fichiers = {
-  actions : path.join(logsDir, 'actions.log'),
-  erreurs : path.join(logsDir, 'erreurs.log'),
-  systeme : path.join(logsDir, 'systeme.log'),
-};
+// Fichier unique qui regroupe tous les logs de l'application
+const logFile = path.join(logsDir, 'app.log');
 
-// Fonction d'écriture de base
-const ecrire = (fichier, niveau, message) => {
+// Fonction de base : formate et écrit une ligne dans app.log
+const ecrire = (niveau, message) => {
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const ligne = `[${date}] [${niveau}] ${message}\n`;
-  fs.appendFileSync(fichier, ligne, 'utf8');
+  fs.appendFileSync(logFile, ligne, 'utf8'); // appendFileSync ajoute à la suite sans écraser
 };
 
+// Raccourcis exportés — à appeler depuis les menus et la session
 export const logger = {
-  // systeme.log
-  demarrage   : ()           => ecrire(fichiers.systeme, 'SYSTEME',     'Application démarrée'),
-  arret       : ()           => ecrire(fichiers.systeme, 'SYSTEME',     'Application arrêtée'),
-  connexion   : (nom, role)  => ecrire(fichiers.systeme, 'CONNEXION',   `${nom} (${role}) connecté`),
-  deconnexion : (nom)        => ecrire(fichiers.systeme, 'DECONNEXION', `${nom} déconnecté`),
 
-  // actions.log
-  action      : (nom, acte)  => ecrire(fichiers.actions, 'ACTION',      `${nom} → ${acte}`),
+  // Événements système — démarrage et arrêt de l'application
+  demarrage   : ()           => ecrire('SYSTEME',     'Application démarrée'),
+  arret       : ()           => ecrire('SYSTEME',     'Application arrêtée'),
 
-  // erreurs.log
-  erreur      : (nom, msg)   => ecrire(fichiers.erreurs, 'ERREUR',      `${nom} : ${msg}`),
-  accesRefuse : (nom, msg)   => ecrire(fichiers.erreurs, 'ACCES_REFUSE',`${nom} : ${msg}`),
+  // Événements d'authentification — connexion et déconnexion d'un utilisateur
+  connexion   : (nom, role)  => ecrire('CONNEXION',   `${nom} (${role}) connecté`),
+  deconnexion : (nom)        => ecrire('DECONNEXION', `${nom} déconnecté`),
+
+  // Actions utilisateur — toute opération réussie (ajout, modification, consultation...)
+  action      : (nom, acte)  => ecrire('ACTION',      `${nom} → ${acte}`),
+
+  // Erreurs — opération échouée ou donnée introuvable
+  erreur      : (nom, msg)   => ecrire('ERREUR',      `${nom} : ${msg}`),
+
+  // Accès refusé — tentative d'accès à une ressource non autorisée
+  accesRefuse : (nom, msg)   => ecrire('ACCES_REFUSE',`${nom} : ${msg}`),
 };
