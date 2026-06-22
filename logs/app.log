@@ -3,3 +3,65 @@
 [2026-06-18 20:27:07] [ACTION] Alice Peigne → Lister tous les étudiants
 [2026-06-18 20:27:43] [ACTION] Alice Peigne → Étudiant ajouté — Papy Alla (MAT-2026-010)
 [2026-06-18 20:28:04] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-19 17:38:23] [SYSTEME] Application démarrée
+[2026-06-19 17:38:37] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-19 17:38:44] [ACTION] Alice Peigne → Stats — meilleur étudiant matière ID : 2
+[2026-06-19 17:38:50] [ACTION] Alice Peigne → Stats — meilleur étudiant matière ID : 1
+[2026-06-19 17:46:09] [ACTION] Alice Peigne → Stats — absences étudiant ID : 6
+[2026-06-19 17:46:15] [ACTION] Alice Peigne → Stats — meilleur étudiant matière ID : 6
+[2026-06-19 17:46:25] [ACTION] Alice Peigne → Stats — moyenne étudiant ID : 6
+[2026-06-19 17:46:36] [ACTION] Alice Peigne → Lister toutes les matières
+[2026-06-21 12:19:18] [SYSTEME] Application démarrée
+[2026-06-21 12:23:06] [CONNEXION] Assamoi Djiane (student) connecté
+[2026-06-21 15:41:48] [SYSTEME] Application démarrée
+[2026-06-21 15:42:38] [SYSTEME] Application démarrée
+[2026-06-21 15:42:48] [ERREUR] 1 : Tentative de connexion échouée — rôle : admin
+[2026-06-21 15:43:21] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 15:43:55] [ERREUR] Alice Peigne : Échec ajout étudiant — matricule : MAT-2026-012
+[2026-06-21 23:14:44] [SYSTEME] Application démarrée
+[2026-06-21 23:15:01] [SYSTEME] Application démarrée
+[2026-06-21 23:15:17] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:16:04] [ACTION] Alice Peigne → Étudiant ajouté — Jean Akoua (MAT-2026-022)
+[2026-06-21 23:16:45] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-21 23:16:47] [SYSTEME] Application démarrée
+[2026-06-21 23:17:03] [ERREUR] Akoua : Tentative de connexion échouée — rôle : student
+[2026-06-21 23:20:26] [ERREUR] Akoua Jean : Tentative de connexion échouée — rôle : student
+[2026-06-21 23:24:22] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:24:40] [ERREUR] Alice Peigne : Échec ajout utilisateur — Akoua (student)
+[2026-06-21 23:37:40] [SYSTEME] Application démarrée
+[2026-06-21 23:38:04] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:38:25] [ERREUR] Alice Peigne : Échec ajout utilisateur — Akoua Jean (student)
+[2026-06-21 23:41:20] [SYSTEME] Application démarrée
+[2026-06-21 23:41:41] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:42:03] [ERREUR] Alice Peigne : Échec ajout utilisateur — Koukou (student)
+[2026-06-21 23:43:51] [SYSTEME] Application démarrée
+[2026-06-21 23:44:19] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:44:34] [SYSTEME] Application démarrée
+[2026-06-21 23:44:57] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:45:46] [SYSTEME] Application démarrée
+[2026-06-21 23:46:02] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:46:15] [ACTION] Alice Peigne → Utilisateur ajouté — koukou (student)
+[2026-06-21 23:46:21] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-21 23:46:24] [SYSTEME] Application démarrée
+[2026-06-21 23:46:32] [ERREUR] koukou : Connexion étudiant sans correspondance
+[2026-06-21 23:47:09] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-21 23:48:03] [ACTION] Alice Peigne → Étudiant ajouté — Jean Koukou (MAT-2026-220)
+[2026-06-21 23:49:06] [ACTION] Alice Peigne → Note ajoutée — étudiant ID : 4, matière ID : 1, note : 20
+[2026-06-21 23:49:21] [ACTION] Alice Peigne → Note ajoutée — étudiant ID : 4, matière ID : 2, note : 15
+[2026-06-21 23:49:28] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-21 23:49:31] [SYSTEME] Application démarrée
+[2026-06-21 23:49:51] [ERREUR] Koukou Jean : Tentative de connexion échouée — rôle : student
+[2026-06-21 23:50:03] [CONNEXION] Koukou Jean (étudiant) connecté
+[2026-06-21 23:51:19] [SYSTEME] Application démarrée
+[2026-06-21 23:51:26] [CONNEXION] Koukou Jean (étudiant) connecté
+[2026-06-22 00:01:24] [SYSTEME] Application démarrée
+[2026-06-22 00:01:30] [CONNEXION] Koukou Jean (étudiant) connecté
+[2026-06-22 00:01:40] [ACTION] koukou → Consulter notes — 2 note(s) (MAT-2026-220)
+[2026-06-22 00:01:50] [ACTION] koukou → Consulter moyenne générale — 17.50 (MAT-2026-220)
+[2026-06-22 00:02:06] [ACTION] koukou → Consulter moyenne par matière — Mathématiques : 20.00 (MAT-2026-220)
+[2026-06-22 00:02:12] [ACTION] koukou → Consulter absences — 0 absence(s) (MAT-2026-220)
+[2026-06-22 00:02:17] [DECONNEXION] koukou déconnecté
+[2026-06-22 00:02:53] [CONNEXION] Bob LeBon (enseignant) connecté
+[2026-06-22 00:03:28] [ACTION] Bob LeBon → Lister tous les étudiants
+[2026-06-22 00:03:35] [ACTION] Bob LeBon → Afficher étudiant — ID : 2
+[2026-06-22 00:03:43] [ACTION] Bob LeBon → Historique absences — étudiant ID : 1

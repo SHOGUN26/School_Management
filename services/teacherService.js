@@ -12,7 +12,11 @@ const createTeacher = (nom, matiere) => {
         VALUES(?,?)
         `);
 
-  return insertTeachers.run(addTeacher.nom, addTeacher.matiere);
+  return insertTeachers.run(
+    addTeacher.nom,
+    addTeacher.matiere,
+    addTeacher.password,
+  );
 };
 
 //MODIFIER UN PROFESSEUR

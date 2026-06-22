@@ -74,10 +74,19 @@ const deleteSubject = (id) => {
     .run(id);
 };
 
+//Récupère le nom de la amatière
+const getSubjectByName = (name) => {
+  return db.prepare(`
+    SELECT * FROM subjects
+    WHERE LOWER(nom) = LOWER(?)
+  `).get(name);
+};
+
 export  {
   createSubject,
   getAllSubjects,
   getSubjectById,
   // affectTeacherSubject,
   deleteSubject,
+  getSubjectByName
 };

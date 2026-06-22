@@ -1,158 +1,148 @@
-import { session } from "../utils/session.js";
 import { question, fermerInterface } from "../utils/interface.js";
+import { session } from "../utils/session.js";
 import { logger } from "../utils/logger.js";
-
-import {
-  getAbsencesByStudent,
-  countUnjustifiedAbsences,
-} from "../services/absenceService.js";
 
 import {
   getStudentGrades,
   calculateAverage,
+  getAverageBySubject,
 } from "../services/gradeService.js";
 
-import db from "../db/database.js";
+import { getAbsencesByStudent } from "../services/absenceService.js";
+import { getSubjectByName } from "../services/subjectService.js";
 
-const student_session = () => session.userConnected.name;
-
-// Fonction utilitaire : vérifie que le matricule existe dans students
-const getStudentByMatricule = (matricule) => {
-  return db
-    .prepare(
-      `
-    SELECT * FROM students WHERE matricule = ?
-  `,
-    )
-    .get(matricule);
-};
-
-// ─── MENU PRINCIPAL STUDENT ────────────────────────────────
+// ─── MENU PRINCIPAL STUDENT ─────────────────────────────────
 export const menuStudent = async () => {
-  while (true) {
-    console.log(`\n══ STUDENT [${session.userConnected.name}] ══`);
-    console.log("1. Consulter mes notes");
-    console.log("2. Consulter mes absences");
-    console.log("3. Consulter ma moyenne");
-    console.log("0. Quitter");
+  const student = session.student;
 
-    const choix = await question("\nVotre choix : ");
+  let actif = true;
+  while (actif) {
+    console.log("\n〚=== MENU ETUDIANT ===〛");
+    console.log(`Connecté en tant que : ${student.nom} ${student.prenom} | Classe : ${student.classe}`);
+    console.log("1. Voir mes notes");
+    console.log("2. Voir ma moyenne générale");
+    console.log("3. Voir ma moyenne par matière");
+    console.log("4. Consulter mes absences");
+    console.log("0. Déconnexion");
+
+    const choix = await question("Choix: ");
 
     switch (choix.trim()) {
-      case "1":
-        await sousMenuGrades();
-        break;
-
-      case "2":
-        await sousMenuAbsences();
-        break;
-
-      case "3":
-        await sousMenuMoyenne();
-        break;
-
+      case "1": await sousMenuNotes(student); break;
+      case "2": await sousMenuMoyenneGenerale(student); break;
+      case "3": await sousMenuMoyenneParMatiere(student); break;
+      case "4": await sousMenuAbsences(student); break;
       case "0":
-        logger.deconnexion(student_session());
-        console.log("Au revoir !");
-        fermerInterface();
-        process.exit(0);
-
+        logger.deconnexion(session.userConnected.name);
+        console.log("Déconnexion.");
+        session.userConnected = null;
+        session.student = null;
+        actif = false;
+        break;
       default:
-        console.log("Choix invalide");
+        console.log("Choix invalide.");
     }
   }
 };
 
-// ─── SAISIE ET VÉRIFICATION DU MATRICULE ──
-const demanderMatricule = async () => {
-  const matricule = await question("Entrez votre matricule : ");
-
-  const student = getStudentByMatricule(matricule.trim());
-
-  if (!student) {
-    logger.erreur(
-      student_session(),
-      `Matricule introuvable : ${matricule.trim()}`,
-    );
-    console.log("Matricule introuvable. Veuillez réessayer.");
-    return null;
-  }
+// ─── SOUS-MENU NOTES ────────────────────────────────────────
+const sousMenuNotes = async (student) => {
+  const grades = getStudentGrades(student.id);
 
   logger.action(
-    student_session(),
-    `Matricule vérifié — ${student.prenom} ${student.nom} (${student.matricule})`,
+    session.userConnected.name,
+    `Consulter notes — ${grades.length} note(s) (${student.matricule})`
   );
-  console.log(
-    `Étudiant identifié : ${student.prenom} ${student.nom} — ${student.classe}`,
-  );
-  return student;
-};
 
-// ─── SOUS-MENU GRADES ──
-const sousMenuGrades = async () => {
-  const student = await demanderMatricule();
-  if (!student) return;
-
-  const notes = getStudentGrades(student.id);
-
-  if (!notes || notes.length === 0) {
-    logger.action(
-      student_session(),
-      `Consulter notes — aucune note (${student.matricule})`,
-    );
-    console.log("\n══ MES NOTES ══");
-    console.log("Aucune note trouvée.");
+  if (!grades || grades.length === 0) {
+    console.log("Aucune note enregistrée.");
   } else {
-    logger.action(
-      student_session(),
-      `Consulter notes — ${notes.length} note(s) (${student.matricule})`,
-    );
-    console.log("\n══ MES NOTES ══");
-    console.table(notes);
+    console.log("╔════════════════════════════════════════╗");
+    console.log("║              MES NOTES                 ║");
+    console.log("╚════════════════════════════════════════╝\n");
+    grades.forEach((grade) => {
+      console.log("┌─────────────────────────────────────┐");
+      console.log(`│ Matière : ${grade.matiere}`);
+      console.log(`│ Note    : ${grade.note}/20`);
+      console.log("└─────────────────────────────────────┘");
+    });
   }
 
   await question("\nEntrée pour continuer...");
 };
 
-// ─── SOUS-MENU ABSENCES ──
-const sousMenuAbsences = async () => {
-  const student = await demanderMatricule();
-  if (!student) return;
-
-  const absences = getAbsencesByStudent(student.id);
-  const unjustified = countUnjustifiedAbsences(student.id);
-
-  logger.action(
-    student_session(),
-    `Consulter absences — ${absences.length} absence(s), ${unjustified} non justifiée(s) (${student.matricule})`,
-  );
-
-  console.log("\n══ MES ABSENCES ══");
-  console.log("Non justifiées :", unjustified);
-
-  if (!absences || absences.length === 0) {
-    console.log("Aucune absence.");
-  } else {
-    console.table(absences);
-  }
-
-  await question("\nEntrée pour continuer...");
-};
-
-// ─── SOUS-MENU MOYENNE ──
-const sousMenuMoyenne = async () => {
-  const student = await demanderMatricule();
-  if (!student) return;
-
+// ─── SOUS-MENU MOYENNE GÉNÉRALE ─────────────────────────────
+const sousMenuMoyenneGenerale = async (student) => {
   const moyenne = calculateAverage(student.id);
 
   logger.action(
-    student_session(),
-    `Consulter moyenne — ${moyenne.toFixed(2)} (${student.matricule})`,
+    session.userConnected.name,
+    `Consulter moyenne générale — ${moyenne !== null ? moyenne.toFixed(2) : "N/A"} (${student.matricule})`
   );
 
-  console.log("\n══ MA MOYENNE ══");
-  console.log(`Moyenne générale : ${moyenne.toFixed(2)}`);
+  if (moyenne === null) {
+    console.log("Aucune note enregistrée.");
+  } else {
+    console.log("┌─────────────────────────────────────┐");
+    console.log(`│ Moyenne générale : ${moyenne.toFixed(2)}/20`);
+    console.log("└─────────────────────────────────────┘");
+  }
+
+  await question("\nEntrée pour continuer...");
+};
+
+// ─── SOUS-MENU MOYENNE PAR MATIÈRE ──────────────────────────
+const sousMenuMoyenneParMatiere = async (student) => {
+  const nom_matiere = await question("Nom de la matière : ");
+  const subject = getSubjectByName(nom_matiere);
+
+  if (!subject) {
+    logger.erreur(session.userConnected.name, `Matière introuvable : ${nom_matiere}`);
+    console.log(`Matière "${nom_matiere}" introuvable.`);
+    return;
+  }
+
+  const moyenne = getAverageBySubject(student.id, subject.id);
+
+  logger.action(
+    session.userConnected.name,
+    `Consulter moyenne par matière — ${nom_matiere} : ${moyenne !== null ? moyenne.toFixed(2) : "N/A"} (${student.matricule})`
+  );
+
+  if (moyenne === null) {
+    console.log("Aucune note pour cette matière.");
+  } else {
+    console.log("┌─────────────────────────────────────┐");
+    console.log(`│ Matière : ${nom_matiere}`);
+    console.log(`│ Moyenne : ${moyenne.toFixed(2)}/20`);
+    console.log("└─────────────────────────────────────┘");
+  }
+
+  await question("\nEntrée pour continuer...");
+};
+
+// ─── SOUS-MENU ABSENCES ─────────────────────────────────────
+const sousMenuAbsences = async (student) => {
+  const absences = getAbsencesByStudent(student.id);
+
+  logger.action(
+    session.userConnected.name,
+    `Consulter absences — ${absences.length} absence(s) (${student.matricule})`
+  );
+
+  if (!absences || absences.length === 0) {
+    console.log("Aucune absence enregistrée.");
+  } else {
+    console.log("╔════════════════════════════════════════╗");
+    console.log("║            MES ABSENCES                ║");
+    console.log("╚════════════════════════════════════════╝\n");
+    absences.forEach((absence) => {
+      console.log("┌─────────────────────────────────────┐");
+      console.log(`│ Date   : ${absence.date}`);
+      console.log(`│ Status : ${absence.status}`);
+      console.log("└─────────────────────────────────────┘");
+    });
+  }
 
   await question("\nEntrée pour continuer...");
 };

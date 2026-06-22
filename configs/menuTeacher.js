@@ -62,46 +62,46 @@ export const menuTeacher = async () => {
 
 // ─── SOUS-MENU ÉTUDIANTS ──
 const sousMenuEtudiants = async () => {
-  console.log("\n── ÉTUDIANTS ──");
-  console.log("1. Lister tous les étudiants");
-  console.log("2. Afficher un étudiant");
-  console.log("0. Retour");
+  while (true) {
+    console.log("\n── ÉTUDIANTS ──");
+    console.log("1. Lister tous les étudiants");
+    console.log("2. Afficher un étudiant");
+    console.log("0. Retour");
 
-  const choix = await question("\nVotre choix : ");
+    const choix = await question("\nVotre choix : ");
 
-  switch (choix.trim()) {
-    case "1": {
-      const students = getAllStudents();
-      logger.action(teacher(), "Lister tous les étudiants");
-      console.table(students);
-      await question("\nAppuie sur Entrée pour continuer...");
-      break;
-    }
-
-    case "2": {
-      const id = await question("ID de l'étudiant : ");
-      const student = getStudentById(Number(id));
-
-      if (!student) {
-        logger.erreur(teacher(), `Étudiant introuvable — ID : ${id}`);
-        console.log("Aucun étudiant trouvé.");
-      } else {
-        logger.action(teacher(), `Afficher étudiant — ID : ${id}`);
-        console.table([student]);
+    switch (choix.trim()) {
+      case "1": {
+        const students = getAllStudents();
+        logger.action(teacher(), "Lister tous les étudiants");
+        console.table(students);
+        await question("\nAppuie sur Entrée pour continuer...");
+        break;
       }
 
-      await question("\nAppuie sur Entrée pour continuer...");
-      break;
+      case "2": {
+        const id = await question("ID de l'étudiant : ");
+        const student = getStudentById(Number(id));
+
+        if (!student) {
+          logger.erreur(teacher(), `Étudiant introuvable — ID : ${id}`);
+          console.log("Aucun étudiant trouvé.");
+        } else {
+          logger.action(teacher(), `Afficher étudiant — ID : ${id}`);
+          console.table([student]);
+        }
+
+        await question("\nAppuie sur Entrée pour continuer...");
+        break;
+      }
+
+      case "0":
+        return;
+
+      default:
+        console.log("Choix invalide.");
     }
-
-    case "0":
-      return;
-
-    default:
-      console.log("Choix invalide.");
   }
-
-  await sousMenuEtudiants();
 };
 
 // ─── SOUS-MENU ABSENCE ──

@@ -124,17 +124,11 @@ const sousMenuEtudiants = async () => {
       console.log("DEBUG INSERT :", result);
 
       if (result.changes === 0) {
-        logger.erreur(
-          admin(),
-          `Échec ajout étudiant — matricule : ${matricule}`,
-        );
-        console.log("❌ Échec de l'insertion (doublon ou erreur)");
+        logger.erreur(admin(), `Échec ajout étudiant — matricule : ${matricule}`);
+        console.log("Échec de l'insertion (doublon ou erreur)");
       } else {
-        logger.action(
-          admin(),
-          `Étudiant ajouté — ${prenom} ${nom} (${matricule})`,
-        );
-        console.log("✅ Étudiant ajouté avec succès !");
+        logger.action(admin(), `Étudiant ajouté — ${prenom} ${nom} (${matricule})`);
+        console.log("Étudiant ajouté avec succès !");
       }
 
       await question("\nAppuie sur Entrée...");
@@ -163,10 +157,10 @@ const sousMenuEtudiants = async () => {
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec suppression étudiant — ID : ${id}`);
-        console.log("❌ Aucun étudiant trouvé");
+        console.log("Aucun étudiant trouvé");
       } else {
         logger.action(admin(), `Étudiant supprimé — ID : ${id}`);
-        console.log("🗑️ Étudiant supprimé !");
+        console.log("Étudiant supprimé !");
       }
       break;
     }
@@ -178,13 +172,12 @@ const sousMenuEtudiants = async () => {
       const prenom = await question("Prénom : ");
       const age = await question("Âge : ");
       const classe = await question("Classe : ");
-
       const result = updateStudent(Number(id), {
         matricule,
         nom,
         prenom,
         age: Number(age),
-        classe,
+        classe
       });
 
       console.log("DEBUG UPDATE :", result);
@@ -233,8 +226,9 @@ const sousMenuProfesseurs = async () => {
     case "2": {
       const nom = await question("Nom : ");
       const matiere = await question("Matière : ");
+      const password = await question("Mot de passe : ");
 
-      const result = createTeacher(nom, matiere);
+      const result = createTeacher(nom, matiere, password);
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec ajout professeur — ${nom}`);
@@ -254,10 +248,10 @@ const sousMenuProfesseurs = async () => {
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec suppression professeur — ID : ${id}`);
-        console.log("❌ Aucun Professeur trouvé");
+        console.log("Aucun Professeur trouvé");
       } else {
         logger.action(admin(), `Professeur supprimé — ID : ${id}`);
-        console.log("🗑️ Professeur supprimé !");
+        console.log("Professeur supprimé !");
       }
       break;
     }
@@ -266,8 +260,9 @@ const sousMenuProfesseurs = async () => {
       const id = await question("ID Professeur à modifier : ");
       const nom = await question("Nom : ");
       const matiere = await question("Matière : ");
+      const password = await question("Mot de passe : ");
 
-      const result = updateTeacher(Number(id), { nom, matiere });
+      const result = updateTeacher(Number(id), { nom, matiere, password });
       console.log("DEBUG UPDATE :", result);
 
       if (result.changes === 0) {
@@ -321,10 +316,7 @@ const sousMenuAbsences = async () => {
         const result = createAbsence(Number(student_id), "non_justifiee");
 
         console.log("DEBUG:", result);
-        logger.action(
-          admin(),
-          `Absence enregistrée — étudiant ID : ${student_id}`,
-        );
+        logger.action(admin(), `Absence enregistrée — étudiant ID : ${student_id}`);
         console.log(`✓ Ajouté (id: ${result.lastInsertRowid})`);
         break;
       }
@@ -335,8 +327,7 @@ const sousMenuAbsences = async () => {
         console.log("2. Non justifiée");
         const choixStatus = await question("Choix : ");
 
-        const status =
-          choixStatus.trim() === "1" ? "justifiee" : "non_justifiee";
+        const status = choixStatus.trim() === "1" ? "justifiee" : "non_justifiee";
         const result = marquerAbsence(Number(id), status);
 
         if (result.changes) {
@@ -354,18 +345,13 @@ const sousMenuAbsences = async () => {
         const absences = getAbsencesByStudent(Number(student_id));
         const unjustified = countUnjustifiedAbsences(Number(student_id));
 
-        logger.action(
-          admin(),
-          `Historique absences — étudiant ID : ${student_id}`,
-        );
+        logger.action(admin(), `Historique absences — étudiant ID : ${student_id}`);
         console.log(`\n Absences non justifiées : ${unjustified}`);
 
         if (!absences || absences.length === 0) {
           console.log("Aucune absence.");
         } else {
-          absences.forEach((a) =>
-            console.log(`[${a.id}] ${a.date} - ${a.status}`),
-          );
+          absences.forEach((a) => console.log(`[${a.id}] ${a.date} - ${a.status}`));
         }
         break;
       }
@@ -399,10 +385,7 @@ const sousMenuGrades = async () => {
         const note = await question("Note : ");
 
         addMultipleGrades(Number(student_id), Number(subject_id), Number(note));
-        logger.action(
-          admin(),
-          `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`,
-        );
+        logger.action(admin(), `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`);
         console.log("✓ Note ajoutée");
         break;
       }
@@ -414,10 +397,7 @@ const sousMenuGrades = async () => {
         const result = updateGrades(Number(id), { note: Number(note) });
 
         if (result.changes) {
-          logger.action(
-            admin(),
-            `Note modifiée — ID : ${id}, nouvelle note : ${note}`,
-          );
+          logger.action(admin(), `Note modifiée — ID : ${id}, nouvelle note : ${note}`);
           console.log("✓ Note modifiée");
         } else {
           logger.erreur(admin(), `Échec modification note — ID : ${id}`);
@@ -444,14 +424,8 @@ const sousMenuGrades = async () => {
         const student_id = await question("ID étudiant : ");
         const subject_id = await question("ID matière : ");
 
-        const average = calculateAverage(
-          Number(student_id),
-          Number(subject_id),
-        );
-        logger.action(
-          admin(),
-          `Moyenne calculée — étudiant ID : ${student_id}, matière ID : ${subject_id} → ${average.toFixed(2)}`,
-        );
+        const average = calculateAverage(Number(student_id), Number(subject_id));
+        logger.action(admin(), `Moyenne calculée — étudiant ID : ${student_id}, matière ID : ${subject_id} → ${average.toFixed(2)}`);
         console.log(`Moyenne : ${average.toFixed(2)}`);
         break;
       }
@@ -460,10 +434,7 @@ const sousMenuGrades = async () => {
         const subject_id = await question("ID matière : ");
         const best = getBestStudentInSubject(Number(subject_id));
 
-        logger.action(
-          admin(),
-          `Meilleur étudiant matière ID : ${subject_id} → étudiant ID : ${best.student_id} (${best.average.toFixed(2)})`,
-        );
+        logger.action(admin(), `Meilleur étudiant matière ID : ${subject_id} → étudiant ID : ${best.student_id} (${best.average.toFixed(2)})`);
         console.log("\nMeilleur étudiant :");
         console.log(`ID: ${best.student_id}`);
         console.log(`Moyenne: ${best.average.toFixed(2)}`);
@@ -511,16 +482,10 @@ const sousMenuSubjects = async () => {
 
         try {
           createSubject(nom, Number(teacher_id));
-          logger.action(
-            admin(),
-            `Matière ajoutée — ${nom} (prof ID : ${teacher_id})`,
-          );
+          logger.action(admin(), `Matière ajoutée — ${nom} (prof ID : ${teacher_id})`);
           console.log("✓ Matière ajoutée");
         } catch (err) {
-          logger.erreur(
-            admin(),
-            `Échec ajout matière — ${nom} : ${err.message}`,
-          );
+          logger.erreur(admin(), `Échec ajout matière — ${nom} : ${err.message}`);
           console.log("Échec", err.message);
         }
 
@@ -590,8 +555,9 @@ const sousMenuUser = async () => {
     case "2": {
       const name = await question("Nom : ");
       const role = await question("Rôle : ");
+      const password = await question("Mot de passe : ");
 
-      const result = createUser(name, role);
+      const result = createUser(name, role, password);
       console.log("DEBUG INSERT :", result);
 
       if (result.changes === 0) {
@@ -662,19 +628,14 @@ const sousMenuStats = async () => {
         const subject_id = await question("ID matière : ");
         const best = getBestStudentInSubject(Number(subject_id));
 
-        logger.action(
-          admin(),
-          `Stats — meilleur étudiant matière ID : ${subject_id}`,
-        );
+        logger.action(admin(), `Stats — meilleur étudiant matière ID : ${subject_id}`);
         console.log("\n══ MEILLEUR ÉTUDIANT ══");
 
         if (!best.student_id) {
           console.log("Aucune note enregistrée pour cette matière.");
         } else {
           const student = getStudentById(best.student_id);
-          console.log(
-            `Étudiant : ${student.prenom} ${student.nom} (${student.classe})`,
-          );
+          console.log(`Étudiant : ${student.prenom} ${student.nom} (${student.classe})`);
           console.log(`Moyenne  : ${best.average.toFixed(2)}/20`);
         }
 

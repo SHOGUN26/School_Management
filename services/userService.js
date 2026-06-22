@@ -3,16 +3,16 @@ import Users from "../models/userModel.js"
 
 
 //AJOUTER UN UTILISATEUR
-const createUser = (name, role)=>{
+const createUser = (name, role, password)=>{
 
-    const addUsers=new Users(name, role)
+    const addUsers=new Users(name, role,password)
 
     const insertUsers = db.prepare(`
-       INSERT OR IGNORE INTO users(name,role)
-       VALUES(?,?)
+       INSERT OR IGNORE INTO users(name,role, password)
+       VALUES(?,?,?)
         `)
 
-    return insertUsers.run(addUsers.name,addUsers.role)
+    return insertUsers.run(addUsers.name,addUsers.role, addUsers.password)
 }
 
 // afficher tout les utilisateurs
