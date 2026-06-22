@@ -226,9 +226,9 @@ const sousMenuProfesseurs = async () => {
     case "2": {
       const nom = await question("Nom : ");
       const matiere = await question("Matière : ");
-      const password = await question("Mot de passe : ");
+      
 
-      const result = createTeacher(nom, matiere, password);
+      const result = createTeacher(nom, matiere);
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec ajout professeur — ${nom}`);
@@ -260,9 +260,8 @@ const sousMenuProfesseurs = async () => {
       const id = await question("ID Professeur à modifier : ");
       const nom = await question("Nom : ");
       const matiere = await question("Matière : ");
-      const password = await question("Mot de passe : ");
 
-      const result = updateTeacher(Number(id), { nom, matiere, password });
+      const result = updateTeacher(Number(id), { nom, matiere });
       console.log("DEBUG UPDATE :", result);
 
       if (result.changes === 0) {

@@ -47,11 +47,16 @@ const updateStudent = (id, data) => {
   );
 };
 
-// supprimer un étudiant
+// SUPPRIMER UN ÉTUDIANT ET TOUT CE QUI LUI EST LIÉ
 const deleteStudent = (id) => {
-    return db.prepare(`
-            DELETE FROM students WHERE id = ?
-        `).run(id);
+  const transaction = db.transaction(() => {
+    db.prepare(`DELETE FROM grades WHERE student_id = ?`).run(id);
+    db.prepare(`DELETE FROM absences WHERE student_id = ?`).run(id);
+    return db.prepare(`DELETE FROM students WHERE id = ?`).run(id);
+  });
+
+  return transaction();
 };
+
 
 export { createStudent, getAllStudents, getStudentById, updateStudent, deleteStudent }

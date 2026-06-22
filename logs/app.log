@@ -65,3 +65,26 @@
 [2026-06-22 00:03:28] [ACTION] Bob LeBon → Lister tous les étudiants
 [2026-06-22 00:03:35] [ACTION] Bob LeBon → Afficher étudiant — ID : 2
 [2026-06-22 00:03:43] [ACTION] Bob LeBon → Historique absences — étudiant ID : 1
+[2026-06-22 00:09:44] [SYSTEME] Application démarrée
+[2026-06-22 00:10:04] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 00:10:46] [ACTION] Alice Peigne → Utilisateur ajouté — Kouadio Menelick (student)
+[2026-06-22 00:11:20] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-22 00:11:23] [SYSTEME] Application démarrée
+[2026-06-22 00:11:35] [ERREUR] Kouadio Menelick : Connexion étudiant sans correspondance
+[2026-06-22 00:12:08] [ERREUR] Kouadio Menelick : Connexion étudiant sans correspondance
+[2026-06-22 00:12:34] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 00:18:46] [SYSTEME] Application démarrée
+[2026-06-22 00:19:05] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 09:37:10] [SYSTEME] Application démarrée
+[2026-06-22 09:37:32] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 09:37:50] [ERREUR] Alice Peigne : Échec suppression étudiant — ID : 1
+[2026-06-22 09:37:57] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-22 09:40:51] [SYSTEME] Application démarrée
+[2026-06-22 09:41:09] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 09:41:15] [ACTION] Alice Peigne → Étudiant supprimé — ID : 2
+[2026-06-22 09:41:19] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-22 09:43:57] [SYSTEME] Application démarrée
+[2026-06-22 09:44:13] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 09:44:23] [ACTION] Alice Peigne → Professeur supprimé — ID : 1
+[2026-06-22 09:47:32] [ACTION] Alice Peigne → Note supprimée — ID : 6
+[2026-06-22 09:47:52] [ACTION] Alice Peigne → Note ajoutée — étudiant ID : 4, matière ID : 2, note : 18
