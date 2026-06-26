@@ -2,22 +2,13 @@ import { session } from "../utils/session.js";
 import { question, fermerInterface } from "../utils/interface.js";
 import { logger } from "../utils/logger.js";
 
-import { getAllStudents, getStudentById } from "../services/studentService.js";
-
-import {
-  getAbsencesByStudent,
-  countUnjustifiedAbsences,
-} from "../services/absenceService.js";
-
-import {
-  addMultipleGrades,
-  updateGrades,
-  deleteGrades,
-} from "../services/gradeService.js";
-
+import { getStudentById } from "../services/studentService.js";
+import { getAbsencesByStudent, countUnjustifiedAbsences } from "../services/absenceService.js";
+import { addMultipleGrades, updateGrades, deleteGrades } from "../services/gradeService.js";
 import { getAllSubjects, getSubjectById } from "../services/subjectService.js";
+import { getClassesByTeacher, getStudentsByClasseAndTeacher } from "../services/teacherClasseService.js";
 
-const teacher = () => session.userConnected.name;
+const teacher = () => session.teacher;
 
 // ─── MENU PRINCIPAL TEACHER ────────────────────────────────
 export const menuTeacher = async () => {
@@ -35,25 +26,20 @@ export const menuTeacher = async () => {
       case "1":
         await sousMenuEtudiants();
         break;
-
       case "2":
         await sousMenuSubjects();
         break;
-
       case "3":
         await sousMenuAbsences();
         break;
-
       case "4":
         await sousMenuGrades();
         break;
-
       case "0":
-        logger.deconnexion(teacher());
+        logger.deconnexion(teacher().nom);
         console.log("Au revoir !");
         fermerInterface();
         process.exit(0);
-
       default:
         console.log("Choix invalide");
     }
@@ -63,43 +49,66 @@ export const menuTeacher = async () => {
 // ─── SOUS-MENU ÉTUDIANTS ──
 const sousMenuEtudiants = async () => {
   while (true) {
-    console.log("\n── ÉTUDIANTS ──");
-    console.log("1. Lister tous les étudiants");
-    console.log("2. Afficher un étudiant");
+    // ✅ Récupérer les classes du prof connecté
+    const classes = getClassesByTeacher(teacher().id);
+
+    console.log("\n── VOS CLASSES ──");
+
+    if (classes.length === 0) {
+      console.log("Aucune classe assignée.");
+      await question("\nAppuie sur Entrée pour continuer...");
+      return;
+    }
+
+    // ✅ Afficher les classes avec leur numéro
+    classes.forEach((c, index) => {
+      console.log(`${index + 1}. ${c.classe}`);
+    });
     console.log("0. Retour");
 
     const choix = await question("\nVotre choix : ");
 
-    switch (choix.trim()) {
-      case "1": {
-        const students = getAllStudents();
-        logger.action(teacher(), "Lister tous les étudiants");
-        console.table(students);
-        await question("\nAppuie sur Entrée pour continuer...");
-        break;
+    if (choix.trim() === "0") return;
+
+    const index     = Number(choix.trim()) - 1;
+    const classeChoisie = classes[index];
+
+    if (!classeChoisie) {
+      console.log("Choix invalide.");
+      continue;
+    }
+
+    // ✅ Afficher les étudiants de la classe choisie
+    const students = getStudentsByClasseAndTeacher(teacher().id, classeChoisie.classe);
+
+    console.log(`\n── ÉTUDIANTS — ${classeChoisie.classe} ──`);
+    console.log(`Professeur : ${teacher().nom} | Matière : ${teacher().matiere}`);
+
+    if (students.length === 0) {
+      console.log("Aucun étudiant dans cette classe.");
+    } else {
+      console.table(students);
+    }
+
+    // Sous-menu étudiant individuel
+    console.log("\n1. Afficher un étudiant");
+    console.log("0. Retour aux classes");
+
+    const choixEtudiant = await question("\nVotre choix : ");
+
+    if (choixEtudiant.trim() === "1") {
+      const id      = await question("ID de l'étudiant : ");
+      const student = getStudentById(Number(id));
+
+      if (!student) {
+        logger.erreur(teacher().nom, `Étudiant introuvable — ID : ${id}`);
+        console.log("Aucun étudiant trouvé.");
+      } else {
+        logger.action(teacher().nom, `Afficher étudiant — ID : ${id}`);
+        console.table([student]);
       }
 
-      case "2": {
-        const id = await question("ID de l'étudiant : ");
-        const student = getStudentById(Number(id));
-
-        if (!student) {
-          logger.erreur(teacher(), `Étudiant introuvable — ID : ${id}`);
-          console.log("Aucun étudiant trouvé.");
-        } else {
-          logger.action(teacher(), `Afficher étudiant — ID : ${id}`);
-          console.table([student]);
-        }
-
-        await question("\nAppuie sur Entrée pour continuer...");
-        break;
-      }
-
-      case "0":
-        return;
-
-      default:
-        console.log("Choix invalide.");
+      await question("\nAppuie sur Entrée pour continuer...");
     }
   }
 };
@@ -115,25 +124,18 @@ const sousMenuAbsences = async () => {
 
     switch (choix.trim()) {
       case "1": {
-        const student_id = await question("ID étudiant : ");
-
-        const absences = getAbsencesByStudent(Number(student_id));
+        const student_id  = await question("ID étudiant : ");
+        const absences    = getAbsencesByStudent(Number(student_id));
         const unjustified = countUnjustifiedAbsences(Number(student_id));
 
-        logger.action(
-          teacher(),
-          `Historique absences — étudiant ID : ${student_id}`,
-        );
-        console.log(`\n Absences non justifiées : ${unjustified}`);
+        logger.action(teacher().nom, `Historique absences — étudiant ID : ${student_id}`);
+        console.log(`\nAbsences non justifiées : ${unjustified}`);
 
         if (!absences || absences.length === 0) {
           console.log("Aucune absence.");
         } else {
-          absences.forEach((a) =>
-            console.log(`[${a.id}] ${a.date} - ${a.status}`),
-          );
+          absences.forEach((a) => console.log(`[${a.id}] ${a.date} - ${a.status}`));
         }
-
         break;
       }
 
@@ -161,46 +163,42 @@ const sousMenuGrades = async () => {
       case "1": {
         const student_id = await question("ID étudiant : ");
         const subject_id = await question("ID matière : ");
-        const note = await question("Note : ");
+        const note       = await question("Note : ");
 
         addMultipleGrades(Number(student_id), Number(subject_id), Number(note));
         logger.action(
-          teacher(),
-          `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`,
+          teacher().nom,
+          `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`
         );
         console.log("✓ Note ajoutée");
         break;
       }
 
       case "2": {
-        const id = await question("ID note : ");
+        const id   = await question("ID note : ");
         const note = await question("Nouvelle note : ");
 
         const result = updateGrades(Number(id), { note: Number(note) });
 
         if (result.changes) {
-          logger.action(
-            teacher(),
-            `Note modifiée — ID : ${id}, nouvelle note : ${note}`,
-          );
+          logger.action(teacher().nom, `Note modifiée — ID : ${id}, nouvelle note : ${note}`);
           console.log("✓ Note modifiée");
         } else {
-          logger.erreur(teacher(), `Échec modification note — ID : ${id}`);
+          logger.erreur(teacher().nom, `Échec modification note — ID : ${id}`);
           console.log("✗ ID introuvable");
         }
         break;
       }
 
       case "3": {
-        const id = await question("ID note à supprimer : ");
-
+        const id     = await question("ID note à supprimer : ");
         const result = deleteGrades(Number(id));
 
         if (result.changes) {
-          logger.action(teacher(), `Note supprimée — ID : ${id}`);
+          logger.action(teacher().nom, `Note supprimée — ID : ${id}`);
           console.log("✓ Note supprimée");
         } else {
-          logger.erreur(teacher(), `Échec suppression note — ID : ${id}`);
+          logger.erreur(teacher().nom, `Échec suppression note — ID : ${id}`);
           console.log("✗ ID introuvable");
         }
         break;
@@ -228,21 +226,21 @@ const sousMenuSubjects = async () => {
     switch (choix.trim()) {
       case "1": {
         const subjects = getAllSubjects();
-        logger.action(teacher(), "Lister toutes les matières");
+        logger.action(teacher().nom, "Lister toutes les matières");
         console.table(subjects);
         await question("\nAppuie sur Entrée...");
         break;
       }
 
       case "2": {
-        const id = await question("ID de la matière à afficher: ");
+        const id     = await question("ID de la matière à afficher : ");
         const result = getSubjectById(Number(id));
 
         if (!result) {
-          logger.erreur(teacher(), `Matière introuvable — ID : ${id}`);
+          logger.erreur(teacher().nom, `Matière introuvable — ID : ${id}`);
           console.log("Aucune matière trouvée.");
         } else {
-          logger.action(teacher(), `Afficher matière — ID : ${id}`);
+          logger.action(teacher().nom, `Afficher matière — ID : ${id}`);
           console.table([result]);
         }
 

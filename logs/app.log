@@ -88,3 +88,64 @@
 [2026-06-22 09:44:23] [ACTION] Alice Peigne → Professeur supprimé — ID : 1
 [2026-06-22 09:47:32] [ACTION] Alice Peigne → Note supprimée — ID : 6
 [2026-06-22 09:47:52] [ACTION] Alice Peigne → Note ajoutée — étudiant ID : 4, matière ID : 2, note : 18
+[2026-06-22 10:35:51] [SYSTEME] Application démarrée
+[2026-06-22 10:36:11] [CONNEXION] Koukou Jean (étudiant) connecté
+[2026-06-22 10:36:15] [ACTION] koukou → Consulter absences — 0 absence(s) (MAT-2026-220)
+[2026-06-22 10:38:57] [DECONNEXION] koukou déconnecté
+[2026-06-22 10:39:19] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 10:39:44] [SYSTEME] Application démarrée
+[2026-06-22 10:40:05] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-22 10:40:10] [ACTION] Alice Peigne → Absence enregistrée — étudiant ID : 4
+[2026-06-22 10:40:41] [ACTION] Alice Peigne → Absence ID 3 marquée : justifiee
+[2026-06-22 10:40:45] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-23 23:06:40] [SYSTEME] Application démarrée
+[2026-06-24 18:45:56] [SYSTEME] Application démarrée
+[2026-06-24 18:46:25] [ERREUR] ALice Peigne : Tentative de connexion échouée — rôle : admin
+[2026-06-24 18:46:53] [SYSTEME] Application démarrée
+[2026-06-24 18:47:10] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-24 18:47:35] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-24 18:48:24] [ACTION] Alice Peigne → Étudiant ajouté — Jean Brou  (MAT-2026-004)
+[2026-06-24 18:48:37] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-24 18:48:45] [ACTION] Alice Peigne → Étudiant supprimé — ID : 5
+[2026-06-24 18:48:47] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-24 18:49:30] [ACTION] Alice Peigne → Étudiant modifié — ID : 3
+[2026-06-24 18:49:33] [ACTION] Alice Peigne → Lister tous les étudiants
+[2026-06-24 18:49:54] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-25 18:54:46] [SYSTEME] Application démarrée
+[2026-06-25 18:55:10] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 18:56:09] [ERREUR] Alice Peigne : Échec ajout utilisateur — Agathe (enseignant)
+[2026-06-25 19:07:14] [SYSTEME] Application démarrée
+[2026-06-25 19:07:27] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 19:07:58] [ACTION] Alice Peigne → Utilisateur ajouté — Gerald Pomme (enseignant)
+[2026-06-25 19:45:29] [SYSTEME] Application démarrée
+[2026-06-25 19:45:40] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 19:48:49] [SYSTEME] Application démarrée
+[2026-06-25 19:49:00] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 19:49:35] [ACTION] Alice Peigne → Étudiant ajouté — Lamine Bah (MAT-2026-009)
+[2026-06-25 20:02:29] [SYSTEME] Application démarrée
+[2026-06-25 20:02:44] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 20:04:23] [ACTION] Alice Peigne → Étudiant ajouté — Yves Bissouma (MAT-2026-100) lié au user ID 4
+[2026-06-25 20:04:30] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-25 20:04:32] [SYSTEME] Application démarrée
+[2026-06-25 20:04:45] [CONNEXION] Bissouma Yves (étudiant) connecté
+[2026-06-25 20:08:54] [SYSTEME] Application démarrée
+[2026-06-25 20:09:35] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 20:10:40] [ACTION] Alice Peigne → Professeur ajouté — Bob LeBon (EPS) lié au user ID 1
+[2026-06-25 20:10:44] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-25 20:10:47] [SYSTEME] Application démarrée
+[2026-06-25 20:11:01] [CONNEXION] IRIE BI (enseignant) connecté
+[2026-06-25 21:10:16] [SYSTEME] Application démarrée
+[2026-06-25 21:10:28] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 21:11:08] [SYSTEME] Application démarrée
+[2026-06-25 21:11:18] [CONNEXION] Alice Peigne (admin) connecté
+[2026-06-25 21:11:37] [DECONNEXION] Alice Peigne déconnecté
+[2026-06-25 21:11:38] [SYSTEME] Application démarrée
+[2026-06-25 21:11:59] [CONNEXION] IRIE BI (enseignant) connecté
+[2026-06-25 21:12:27] [ACTION] IRIE BI → Lister toutes les matières
+[2026-06-26 00:06:19] [SYSTEME] Application démarrée
+[2026-06-26 00:06:53] [CONNEXION] IRIE BI (enseignant) connecté
+[2026-06-26 00:07:37] [DECONNEXION] IRIE BI déconnecté
+[2026-06-26 00:07:40] [SYSTEME] Application démarrée
+[2026-06-26 00:07:51] [SYSTEME] Application démarrée
+[2026-06-26 00:08:03] [SYSTEME] Application démarrée
+[2026-06-26 00:08:17] [CONNEXION] Alice Peigne (admin) connecté

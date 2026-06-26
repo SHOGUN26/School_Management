@@ -1,52 +1,60 @@
 import db from "../db/database.js";
 import Teacher from "../models/teacherModel.js";
 
-// CREATION OU AJOUT DE PROFESSEUR
-const createTeacher = (nom, matiere) => {
-  const addTeacher = new Teacher(nom, matiere);
+// Créer un professeur
+const createTeacher = (nom, matiere, user_id = null) => {
+  const addTeacher = new Teacher(nom, matiere, user_id);
+
   const insertTeachers = db.prepare(`
-    INSERT OR IGNORE INTO teachers (nom, matiere)
-    VALUES(?, ?)
+    INSERT OR IGNORE INTO teachers(nom, matiere, user_id)
+    VALUES(?, ?, ?)
   `);
-  return insertTeachers.run(addTeacher.nom, addTeacher.matiere);
+
+  return insertTeachers.run(
+    addTeacher.nom,
+    addTeacher.matiere,
+    addTeacher.user_id
+  );
 };
 
-// MODIFIER UN PROFESSEUR
+// Modifier un professeur
 const updateTeacher = (id, data) => {
   const updateTeacherStmt = db.prepare(`
-    UPDATE teachers SET nom = ?, matiere = ?
+    UPDATE teachers
+    SET nom = ?, matiere = ?, user_id = ?
     WHERE id = ?
   `);
-  return updateTeacherStmt.run(data.nom, data.matiere, id);
+
+  return updateTeacherStmt.run(
+    data.nom,
+    data.matiere,
+    data.user_id ?? null,
+    id
+  );
 };
 
-// SUPPRIMER UN PROFESSEUR ET TOUT CE QUI LUI EST LIÉ
+// Supprimer un professeur et tout ce qui lui est lié
 const deleteTeacher = (id) => {
   const transaction = db.transaction(() => {
-    // Récupérer les matières liées au prof
     const subjects = db.prepare(`SELECT id FROM subjects WHERE teacher_id = ?`).all(id);
 
-    // Pour chaque matière, supprimer les notes associées
     for (const subject of subjects) {
       db.prepare(`DELETE FROM grades WHERE subject_id = ?`).run(subject.id);
     }
 
-    // Supprimer les matières du prof
     db.prepare(`DELETE FROM subjects WHERE teacher_id = ?`).run(id);
-
-    // Supprimer le prof
     return db.prepare(`DELETE FROM teachers WHERE id = ?`).run(id);
   });
 
   return transaction();
 };
 
-// AFFICHER TOUS LES PROFESSEURS
+// Afficher tous les professeurs
 const getAllTeachers = () => {
   return db.prepare(`SELECT * FROM teachers`).all();
 };
 
-// AFFICHER UN PROFESSEUR PAR ID
+// Afficher un professeur par id
 const getTeacherById = (id) => {
   return db.prepare(`SELECT * FROM teachers WHERE id = ?`).get(id);
 };

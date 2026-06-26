@@ -42,6 +42,12 @@ import {
   deleteUser,
 } from "../services/userService.js";
 
+import {
+  assignerClasse,
+  getClassesByTeacher,
+  retirerClasse,
+} from "../services/teacherClasseService.js";
+
 const admin = () => session.userConnected.name;
 
 // ─── MENU PRINCIPAL ADMIN ────────────────────────────────
@@ -120,15 +126,37 @@ const sousMenuEtudiants = async () => {
       const age = await question("Âge : ");
       const classe = await question("Classe : ");
 
-      const result = createStudent(matricule, nom, prenom, age, classe);
-      console.log("DEBUG INSERT :", result);
+      // On affiche les users students disponibles
+      const users = getAllUsers();
+      const usersStudents = users.filter((u) => u.role === "student");
+      console.log("\n── Comptes utilisateurs students ──");
+      console.table(usersStudents);
+
+      // On demande toujours l'ID
+      const choixUserId = await question("ID utilisateur à lier : ");
+      const user_id = Number(choixUserId);
+
+      const result = createStudent(
+        matricule,
+        nom,
+        prenom,
+        Number(age),
+        classe,
+        user_id,
+      );
 
       if (result.changes === 0) {
-        logger.erreur(admin(), `Échec ajout étudiant — matricule : ${matricule}`);
+        logger.erreur(
+          admin(),
+          `Échec ajout étudiant — matricule : ${matricule}`,
+        );
         console.log("Échec de l'insertion (doublon ou erreur)");
       } else {
-        logger.action(admin(), `Étudiant ajouté — ${prenom} ${nom} (${matricule})`);
-        console.log("Étudiant ajouté avec succès !");
+        logger.action(
+          admin(),
+          `Étudiant ajouté — ${prenom} ${nom} (${matricule}) lié au user ID ${user_id}`,
+        );
+        console.log(`Étudiant ajouté avec succès ! (user_id : ${user_id})`);
       }
 
       await question("\nAppuie sur Entrée...");
@@ -177,7 +205,7 @@ const sousMenuEtudiants = async () => {
         nom,
         prenom,
         age: Number(age),
-        classe
+        classe,
       });
 
       console.log("DEBUG UPDATE :", result);
@@ -210,6 +238,7 @@ const sousMenuProfesseurs = async () => {
   console.log("3. Supprimer");
   console.log("4. Modifier");
   console.log("5. Afficher un professeur");
+  console.log("6. Gérer les classes d'un professeur");
   console.log("0. Retour");
 
   const choix = await question("\nVotre choix : ");
@@ -224,18 +253,43 @@ const sousMenuProfesseurs = async () => {
     }
 
     case "2": {
-      const nom = await question("Nom : ");
+      const nom     = await question("Nom : ");
       const matiere = await question("Matière : ");
-      
 
-      const result = createTeacher(nom, matiere);
+      const users          = getAllUsers();
+      const usersEnseignants = users.filter((u) => u.role === "enseignant");
+      console.log("\n── Comptes utilisateurs enseignants ──");
+      console.table(usersEnseignants);
+
+      const choixUserId = await question("ID utilisateur à lier : ");
+      const user_id     = Number(choixUserId);
+
+      const result = createTeacher(nom, matiere, user_id);
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec ajout professeur — ${nom}`);
         console.log("Échec de l'ajout.");
-      } else {
-        logger.action(admin(), `Professeur ajouté — ${nom} (${matiere})`);
-        console.log("Professeur ajouté avec succès !");
+        break;
+      }
+
+      logger.action(admin(), `Professeur ajouté — ${nom} (${matiere}) lié au user ID ${user_id}`);
+      console.log(`Professeur ajouté avec succès ! (user_id : ${user_id})`);
+
+      // ✅ Assigner les classes directement après la création
+      const teacherId = result.lastInsertRowid;
+      console.log("\nAssignez les classes à ce professeur.");
+      console.log("(Tapez une classe et Entrée, laissez vide pour terminer)");
+
+      while (true) {
+        const classe = await question("Classe : ");
+        if (classe.trim() === "") break;
+
+        const linked = assignerClasse(teacherId, classe.trim());
+        if (linked.changes === 0) {
+          console.log(`✗ Classe "${classe}" déjà assignée ou erreur.`);
+        } else {
+          console.log(`✓ Classe "${classe}" assignée à ${nom}`);
+        }
       }
 
       await question("\nAppuie sur Entrée pour continuer...");
@@ -243,7 +297,7 @@ const sousMenuProfesseurs = async () => {
     }
 
     case "3": {
-      const id = await question("ID Professeur à supprimer : ");
+      const id     = await question("ID Professeur à supprimer : ");
       const result = deleteTeacher(id);
 
       if (result.changes === 0) {
@@ -257,12 +311,11 @@ const sousMenuProfesseurs = async () => {
     }
 
     case "4": {
-      const id = await question("ID Professeur à modifier : ");
-      const nom = await question("Nom : ");
+      const id      = await question("ID Professeur à modifier : ");
+      const nom     = await question("Nom : ");
       const matiere = await question("Matière : ");
 
       const result = updateTeacher(Number(id), { nom, matiere });
-      console.log("DEBUG UPDATE :", result);
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec modification professeur — ID : ${id}`);
@@ -275,7 +328,7 @@ const sousMenuProfesseurs = async () => {
     }
 
     case "5": {
-      const id = await question("ID du professeur : ");
+      const id      = await question("ID du professeur : ");
       const teacher = getTeacherById(Number(id));
 
       if (!teacher) {
@@ -284,9 +337,74 @@ const sousMenuProfesseurs = async () => {
       } else {
         logger.action(admin(), `Afficher professeur — ID : ${id}`);
         console.table([teacher]);
+
+        // ✅ Afficher ses classes en même temps
+        const classes = getClassesByTeacher(teacher.id);
+        if (classes.length === 0) {
+          console.log("Classes : Aucune classe assignée");
+        } else {
+          console.log(`Classes : ${classes.map((c) => c.classe).join(", ")}`);
+        }
       }
 
       await question("\nAppuie sur Entrée pour continuer...");
+      break;
+    }
+
+    // ✅ Gérer les classes d'un professeur
+    case "6": {
+      const id      = await question("ID du professeur : ");
+      const teacher = getTeacherById(Number(id));
+
+      if (!teacher) {
+        console.log("Professeur introuvable.");
+        break;
+      }
+
+      console.log(`\nProfesseur : ${teacher.nom} | Matière : ${teacher.matiere}`);
+
+      while (true) {
+        const classes = getClassesByTeacher(Number(id));
+
+        console.log("\n── Classes actuelles ──");
+        if (classes.length === 0) {
+          console.log("Aucune classe assignée.");
+        } else {
+          classes.forEach((c, i) => console.log(`${i + 1}. ${c.classe}`));
+        }
+
+        console.log("\n1. Ajouter une classe");
+        console.log("2. Retirer une classe");
+        console.log("0. Retour");
+
+        const action = await question("\nVotre choix : ");
+
+        if (action.trim() === "0") break;
+
+        if (action.trim() === "1") {
+          const classe = await question("Nom de la classe : ");
+          const result = assignerClasse(Number(id), classe.trim());
+
+          if (result.changes === 0) {
+            console.log(`✗ Classe "${classe}" déjà assignée.`);
+          } else {
+            logger.action(admin(), `Classe "${classe}" assignée au prof ID ${id}`);
+            console.log(`✓ Classe "${classe}" assignée.`);
+          }
+        }
+
+        if (action.trim() === "2") {
+          const classe = await question("Nom de la classe à retirer : ");
+          const result = retirerClasse(Number(id), classe.trim());
+
+          if (result.changes === 0) {
+            console.log(`✗ Classe "${classe}" introuvable.`);
+          } else {
+            logger.action(admin(), `Classe "${classe}" retirée du prof ID ${id}`);
+            console.log(`✓ Classe "${classe}" retirée.`);
+          }
+        }
+      }
       break;
     }
 
@@ -296,6 +414,8 @@ const sousMenuProfesseurs = async () => {
     default:
       console.log("Choix invalide.");
   }
+
+  await sousMenuProfesseurs();
 };
 
 // ─── SOUS-MENU ABSENCE ──
@@ -315,7 +435,10 @@ const sousMenuAbsences = async () => {
         const result = createAbsence(Number(student_id), "non_justifiee");
 
         console.log("DEBUG:", result);
-        logger.action(admin(), `Absence enregistrée — étudiant ID : ${student_id}`);
+        logger.action(
+          admin(),
+          `Absence enregistrée — étudiant ID : ${student_id}`,
+        );
         console.log(`✓ Ajouté (id: ${result.lastInsertRowid})`);
         break;
       }
@@ -326,7 +449,8 @@ const sousMenuAbsences = async () => {
         console.log("2. Non justifiée");
         const choixStatus = await question("Choix : ");
 
-        const status = choixStatus.trim() === "1" ? "justifiee" : "non_justifiee";
+        const status =
+          choixStatus.trim() === "1" ? "justifiee" : "non_justifiee";
         const result = marquerAbsence(Number(id), status);
 
         if (result.changes) {
@@ -344,13 +468,18 @@ const sousMenuAbsences = async () => {
         const absences = getAbsencesByStudent(Number(student_id));
         const unjustified = countUnjustifiedAbsences(Number(student_id));
 
-        logger.action(admin(), `Historique absences — étudiant ID : ${student_id}`);
+        logger.action(
+          admin(),
+          `Historique absences — étudiant ID : ${student_id}`,
+        );
         console.log(`\n Absences non justifiées : ${unjustified}`);
 
         if (!absences || absences.length === 0) {
           console.log("Aucune absence.");
         } else {
-          absences.forEach((a) => console.log(`[${a.id}] ${a.date} - ${a.status}`));
+          absences.forEach((a) =>
+            console.log(`[${a.id}] ${a.date} - ${a.status}`),
+          );
         }
         break;
       }
@@ -384,7 +513,10 @@ const sousMenuGrades = async () => {
         const note = await question("Note : ");
 
         addMultipleGrades(Number(student_id), Number(subject_id), Number(note));
-        logger.action(admin(), `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`);
+        logger.action(
+          admin(),
+          `Note ajoutée — étudiant ID : ${student_id}, matière ID : ${subject_id}, note : ${note}`,
+        );
         console.log("✓ Note ajoutée");
         break;
       }
@@ -396,7 +528,10 @@ const sousMenuGrades = async () => {
         const result = updateGrades(Number(id), { note: Number(note) });
 
         if (result.changes) {
-          logger.action(admin(), `Note modifiée — ID : ${id}, nouvelle note : ${note}`);
+          logger.action(
+            admin(),
+            `Note modifiée — ID : ${id}, nouvelle note : ${note}`,
+          );
           console.log("✓ Note modifiée");
         } else {
           logger.erreur(admin(), `Échec modification note — ID : ${id}`);
@@ -423,8 +558,14 @@ const sousMenuGrades = async () => {
         const student_id = await question("ID étudiant : ");
         const subject_id = await question("ID matière : ");
 
-        const average = calculateAverage(Number(student_id), Number(subject_id));
-        logger.action(admin(), `Moyenne calculée — étudiant ID : ${student_id}, matière ID : ${subject_id} → ${average.toFixed(2)}`);
+        const average = calculateAverage(
+          Number(student_id),
+          Number(subject_id),
+        );
+        logger.action(
+          admin(),
+          `Moyenne calculée — étudiant ID : ${student_id}, matière ID : ${subject_id} → ${average.toFixed(2)}`,
+        );
         console.log(`Moyenne : ${average.toFixed(2)}`);
         break;
       }
@@ -433,7 +574,10 @@ const sousMenuGrades = async () => {
         const subject_id = await question("ID matière : ");
         const best = getBestStudentInSubject(Number(subject_id));
 
-        logger.action(admin(), `Meilleur étudiant matière ID : ${subject_id} → étudiant ID : ${best.student_id} (${best.average.toFixed(2)})`);
+        logger.action(
+          admin(),
+          `Meilleur étudiant matière ID : ${subject_id} → étudiant ID : ${best.student_id} (${best.average.toFixed(2)})`,
+        );
         console.log("\nMeilleur étudiant :");
         console.log(`ID: ${best.student_id}`);
         console.log(`Moyenne: ${best.average.toFixed(2)}`);
@@ -481,10 +625,16 @@ const sousMenuSubjects = async () => {
 
         try {
           createSubject(nom, Number(teacher_id));
-          logger.action(admin(), `Matière ajoutée — ${nom} (prof ID : ${teacher_id})`);
+          logger.action(
+            admin(),
+            `Matière ajoutée — ${nom} (prof ID : ${teacher_id})`,
+          );
           console.log("✓ Matière ajoutée");
         } catch (err) {
-          logger.erreur(admin(), `Échec ajout matière — ${nom} : ${err.message}`);
+          logger.erreur(
+            admin(),
+            `Échec ajout matière — ${nom} : ${err.message}`,
+          );
           console.log("Échec", err.message);
         }
 
@@ -550,22 +700,48 @@ const sousMenuUser = async () => {
       await question("\nAppuie sur Entrée pour continuer...");
       break;
     }
-
     case "2": {
       const name = await question("Nom : ");
-      const role = await question("Rôle : ");
+      const pseudo = await question("Pseudo : ");
       const password = await question("Mot de passe : ");
 
-      const result = createUser(name, role, password);
+      console.log("\nRôle :");
+      console.log("1. Admin");
+      console.log("2. Étudiant");
+      console.log("3. Enseignant");
+      const choixRole = await question("Votre choix : ");
+
+      let role;
+      switch (choixRole.trim()) {
+        case "1":
+          role = "admin";
+          break;
+        case "2":
+          role = "student";
+          break;
+        case "3":
+          role = "enseignant";
+          break;
+        default:
+          console.log("Rôle invalide, opération annulée.");
+          break;
+      }
+
+      if (!role) break;
+
+      const result = createUser(name, pseudo, role, password);
       console.log("DEBUG INSERT :", result);
 
       if (result.changes === 0) {
         logger.erreur(admin(), `Échec ajout utilisateur — ${name} (${role})`);
         console.log("Échec de l'insertion (doublon ou erreur)");
-      } else {
-        logger.action(admin(), `Utilisateur ajouté — ${name} (${role})`);
-        console.log("Utilisateur ajouté avec succès !");
+        break;
       }
+
+      logger.action(admin(), `Utilisateur ajouté — ${name} (${role})`);
+      // On informe l'admin que le lien se fait lors de la création du profil
+      console.log(`Utilisateur ajouté ! Pour le lier, créez le profil correspondant
+dans "Gérer les étudiants" ou "Gérer les Professeurs".`);
 
       await question("\nAppuie sur Entrée...");
       break;
@@ -627,14 +803,19 @@ const sousMenuStats = async () => {
         const subject_id = await question("ID matière : ");
         const best = getBestStudentInSubject(Number(subject_id));
 
-        logger.action(admin(), `Stats — meilleur étudiant matière ID : ${subject_id}`);
+        logger.action(
+          admin(),
+          `Stats — meilleur étudiant matière ID : ${subject_id}`,
+        );
         console.log("\n══ MEILLEUR ÉTUDIANT ══");
 
         if (!best.student_id) {
           console.log("Aucune note enregistrée pour cette matière.");
         } else {
           const student = getStudentById(best.student_id);
-          console.log(`Étudiant : ${student.prenom} ${student.nom} (${student.classe})`);
+          console.log(
+            `Étudiant : ${student.prenom} ${student.nom} (${student.classe})`,
+          );
           console.log(`Moyenne  : ${best.average.toFixed(2)}/20`);
         }
 

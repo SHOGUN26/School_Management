@@ -1,39 +1,40 @@
 import db from "../db/database.js";
 import Student from "../models/studentModel.js";
 
-// Créer ou ajouter étudiant
-const createStudent = (matricule, nom, prenom, age, classe) => {
-    const addStudent = new Student(matricule, nom, prenom, age, classe)
-  
-    const insertStudents = db.prepare(`
-            INSERT OR IGNORE INTO students(matricule, nom, prenom, age, classe)
-            VALUES(?, ?, ?, ?, ?)
-        `);
-        return insertStudents.run(addStudent.matricule, addStudent.nom, addStudent.prenom, addStudent.age, addStudent.classe);
+// Créer un étudiant
+const createStudent = (matricule, nom, prenom, age, classe, user_id = null) => {
+  const addStudent = new Student(matricule, nom, prenom, age, classe, user_id);
+
+  const insertStudents = db.prepare(`
+    INSERT OR IGNORE INTO students(matricule, nom, prenom, age, classe, user_id)
+    VALUES(?, ?, ?, ?, ?, ?)
+  `);
+
+  return insertStudents.run(
+    addStudent.matricule,
+    addStudent.nom,
+    addStudent.prenom,
+    addStudent.age,
+    addStudent.classe,
+    addStudent.user_id
+  );
 };
 
-// afficher tout les étudiants
+// Afficher tous les étudiants
 const getAllStudents = () => {
-    return db.prepare(`
-            SELECT * FROM students
-        `).all();
+  return db.prepare(`SELECT * FROM students`).all();
 };
 
-
-// afficher un étuidant grâce à son id
+// Afficher un étudiant par son id
 const getStudentById = (id) => {
-    return db.prepare(`
-            SELECT * FROM students
-            WHERE id = ?
-        `).get(id);
+  return db.prepare(`SELECT * FROM students WHERE id = ?`).get(id);
 };
 
-
-// faire une mise à jour
+// Mettre à jour un étudiant
 const updateStudent = (id, data) => {
   const updateStudentStmt = db.prepare(`
-    UPDATE students 
-    SET matricule = ?, nom = ?, prenom = ?, age = ?, classe = ?
+    UPDATE students
+    SET matricule = ?, nom = ?, prenom = ?, age = ?, classe = ?, user_id = ?
     WHERE id = ?
   `);
 
@@ -43,11 +44,12 @@ const updateStudent = (id, data) => {
     data.prenom,
     data.age,
     data.classe,
+    data.user_id ?? null,
     id
   );
 };
 
-// SUPPRIMER UN ÉTUDIANT ET TOUT CE QUI LUI EST LIÉ
+// Supprimer un étudiant et tout ce qui lui est lié
 const deleteStudent = (id) => {
   const transaction = db.transaction(() => {
     db.prepare(`DELETE FROM grades WHERE student_id = ?`).run(id);
@@ -58,5 +60,4 @@ const deleteStudent = (id) => {
   return transaction();
 };
 
-
-export { createStudent, getAllStudents, getStudentById, updateStudent, deleteStudent }
+export { createStudent, getAllStudents, getStudentById, updateStudent, deleteStudent };
