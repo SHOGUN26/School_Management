@@ -51,16 +51,6 @@ const getSubjectById = (id) => {
     .get(id);
 };
 
-// //AFFECTATION D'UNE MATIERE A UN PROFESSEUR
-// const affectTeacherSubject = (subjectId, teacherId) => {
-//     const assign = db.prepare(`
-//         UPDATE subjects
-//         SET teacher_id = ?
-//         WHERE id = ?
-//     `);
-
-//     return assign.run(teacherId, subjectId);
-// };
 
 //SUPPRESSION D'UNE MATIERE
 

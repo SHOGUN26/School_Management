@@ -275,7 +275,7 @@ const sousMenuProfesseurs = async () => {
       logger.action(admin(), `Professeur ajouté — ${nom} (${matiere}) lié au user ID ${user_id}`);
       console.log(`Professeur ajouté avec succès ! (user_id : ${user_id})`);
 
-      // ✅ Assigner les classes directement après la création
+      // Assigner les classes directement après la création
       const teacherId = result.lastInsertRowid;
       console.log("\nAssignez les classes à ce professeur.");
       console.log("(Tapez une classe et Entrée, laissez vide pour terminer)");
@@ -338,7 +338,7 @@ const sousMenuProfesseurs = async () => {
         logger.action(admin(), `Afficher professeur — ID : ${id}`);
         console.table([teacher]);
 
-        // ✅ Afficher ses classes en même temps
+        // Afficher ses classes en même temps
         const classes = getClassesByTeacher(teacher.id);
         if (classes.length === 0) {
           console.log("Classes : Aucune classe assignée");
@@ -351,7 +351,7 @@ const sousMenuProfesseurs = async () => {
       break;
     }
 
-    // ✅ Gérer les classes d'un professeur
+    // Gérer les classes d'un professeur
     case "6": {
       const id      = await question("ID du professeur : ");
       const teacher = getTeacherById(Number(id));

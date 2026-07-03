@@ -54,7 +54,7 @@ const insertTeachers = db.prepare(`
         VALUES(?, ?, ?)
 `);
 
-// ✅ CREATION DE LA TABLE teacher_classes
+// CREATION DE LA TABLE teacher_classes
 const tableTeacherClasses = `
     CREATE TABLE IF NOT EXISTS teacher_classes(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -137,7 +137,7 @@ insertStudents.run("MAT-2026-003", "Koffi",   "Sebastien", 18, "1er C1", userAli
 const { lastInsertRowid: teacherIrieId }    = insertTeachers.run("IRIE BI",         "Mathématiques", userBobId);
 const { lastInsertRowid: teacherDramaneId } = insertTeachers.run("DRAMANE SCHELLA", "Français",      userBobId);
 
-// ✅ teacher_classes  (teacher_id, classe)
+//teacher_classes  (teacher_id, classe)
 // IRIE BI enseigne les Maths en 1er A1 et 1er C1
 insertTeacherClasses.run(teacherIrieId,    "1er A1");
 insertTeacherClasses.run(teacherIrieId,    "1er C1");
@@ -179,7 +179,7 @@ const queryGrades = db.prepare(`
 console.log("LISTE DES NOTES");
 console.log(queryGrades.all());
 
-// ✅ Vérification teacher_classes
+// Vérification teacher_classes
 const queryTeacherClasses = db.prepare(`
     SELECT
         teachers.nom AS professeur,

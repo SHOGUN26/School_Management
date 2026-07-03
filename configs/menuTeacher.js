@@ -49,7 +49,7 @@ export const menuTeacher = async () => {
 // ─── SOUS-MENU ÉTUDIANTS ──
 const sousMenuEtudiants = async () => {
   while (true) {
-    // ✅ Récupérer les classes du prof connecté
+    //Récupérer les classes du prof connecté
     const classes = getClassesByTeacher(teacher().id);
 
     console.log("\n── VOS CLASSES ──");
@@ -60,7 +60,7 @@ const sousMenuEtudiants = async () => {
       return;
     }
 
-    // ✅ Afficher les classes avec leur numéro
+    // Afficher les classes avec leur numéro
     classes.forEach((c, index) => {
       console.log(`${index + 1}. ${c.classe}`);
     });
@@ -78,7 +78,7 @@ const sousMenuEtudiants = async () => {
       continue;
     }
 
-    // ✅ Afficher les étudiants de la classe choisie
+    // Afficher les étudiants de la classe choisie
     const students = getStudentsByClasseAndTeacher(teacher().id, classeChoisie.classe);
 
     console.log(`\n── ÉTUDIANTS — ${classeChoisie.classe} ──`);

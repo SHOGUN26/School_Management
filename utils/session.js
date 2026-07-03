@@ -8,7 +8,7 @@ export const session = {
   userConnected: null,
   student:       null,
   teacher:       null,
-  classes:       [], // ✅ classes du prof connecté
+  classes:       [], // classes du prof connecté
 };
 
 const seConnecter = async () => {
