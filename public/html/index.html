@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Registre — Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <div class="registre">
+
+    <!-- PANNEAU GAUCHE — identité -->
+    <aside class="registre__panel" aria-hidden="false">
+      <div class="panel__grain"></div>
+
+      <div class="panel__top">
+        <span class="panel__mark">É.G.S — 2026</span>
+        <h1 class="panel__title">Registre</h1>
+        <p class="panel__subtitle">Le journal d'école, tenu à jour.</p>
+      </div>
+
+      <!-- SIGNATURE : onglets d'index, façon fiches de classement -->
+      <div class="tabs" role="tablist" aria-label="Aperçu par profil">
+        <button class="tab tab--admin" data-role="admin" role="tab" aria-selected="true">
+          <span class="tab__code">ADM</span>
+          <span class="tab__label">Administration</span>
+        </button>
+        <button class="tab tab--prof" data-role="professeur" role="tab" aria-selected="false">
+          <span class="tab__code">PROF</span>
+          <span class="tab__label">Enseignant</span>
+        </button>
+        <button class="tab tab--eleve" data-role="etudiant" role="tab" aria-selected="false">
+          <span class="tab__code">ÉLV</span>
+          <span class="tab__label">Étudiant</span>
+        </button>
+      </div>
+
+      <p class="panel__desc" id="panelDesc">
+        Vue d'ensemble des classes, des professeurs et des matières —
+        ajouts, corrections et suppressions centralisés.
+      </p>
+
+      <div class="panel__foot">
+        <p>Système de gestion d'école — usage interne</p>
+      </div>
+    </aside>
+
+    <!-- PANNEAU DROIT — fiche de connexion -->
+    <main class="registre__main">
+      <div class="fiche">
+
+        <div class="fiche__ruler" aria-hidden="true"></div>
+
+        <header class="fiche__head">
+          <span class="fiche__eyebrow">Fiche d'accès</span>
+          <h2 class="fiche__title">Connexion</h2>
+        </header>
+
+        <form class="form" id="loginForm" novalidate>
+
+          <div class="field">
+            <label class="field__label" for="pseudo">Pseudo</label>
+            <input
+              class="field__input"
+              type="text"
+              id="pseudo"
+              name="pseudo"
+              autocomplete="username"
+              placeholder="ex. bob"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="password">Mot de passe</label>
+            <div class="field__input-wrap">
+              <input
+                class="field__input"
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" class="field__toggle" id="togglePassword" aria-label="Afficher le mot de passe">
+                voir
+              </button>
+            </div>
+          </div>
+
+          <p class="form__error" id="formError" role="alert" hidden></p>
+
+          <button class="btn" type="submit" id="submitBtn">
+            <span class="btn__label">Entrer</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+
+        </form>
+
+        <footer class="fiche__foot">
+          <span class="fiche__stamp" id="statusStamp">Non connecté</span>
+        </footer>
+
+      </div>
+    </main>
+
+  </div>
+
+<script src="../js/login.js"></script>
+</body>
+</html>

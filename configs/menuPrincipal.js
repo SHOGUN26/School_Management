@@ -7,7 +7,7 @@ import { logger } from "../utils/logger.js";
 
 const menuPrincipal = async () => {
   console.log("╔════════════════════════════════════════╗");
-  console.log("║   BIENVENU SUR VOTRE APPLICATION       ║");
+  console.log("║   BIENVENUE SUR VOTRE APPLICATION       ║");
   console.log("║         DE GESTION D'ECOLE             ║");
   console.log("╚════════════════════════════════════════╝");
 

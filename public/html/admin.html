@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Registre — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body class="dash-body">
+
+  <div class="dash">
+
+    <!-- SIDEBAR -->
+    <aside class="dash__sidebar">
+      <div class="dash__brand">
+        <span class="dash__brand-mark">É.G.S — 2026</span>
+        <h1 class="dash__brand-title">Registre</h1>
+      </div>
+
+      <nav class="dash__nav" id="dashNav">
+        <button class="navitem is-active" data-view="etudiants">
+          <span class="navitem__code">01</span> Étudiants
+        </button>
+        <button class="navitem" data-view="professeurs">
+          <span class="navitem__code">02</span> Professeurs
+        </button>
+        <button class="navitem" data-view="absences">
+          <span class="navitem__code">03</span> Absences
+        </button>
+        <button class="navitem" data-view="notes">
+          <span class="navitem__code">04</span> Notes
+        </button>
+        <button class="navitem" data-view="matieres">
+          <span class="navitem__code">05</span> Matières
+        </button>
+        <button class="navitem" data-view="utilisateurs">
+          <span class="navitem__code">06</span> Utilisateurs
+        </button>
+        <button class="navitem" data-view="stats">
+          <span class="navitem__code">07</span> Statistiques
+        </button>
+      </nav>
+
+      <div class="dash__foot">
+        <div class="whoami">
+          <span class="whoami__name" id="whoamiName">—</span>
+          <span class="whoami__role">Administration</span>
+        </div>
+        <button class="logout" id="logoutBtn">Déconnexion</button>
+      </div>
+    </aside>
+
+    <!-- CONTENU -->
+    <main class="dash__main">
+
+      <header class="dash__topbar">
+        <h2 class="dash__view-title" id="viewTitle">Étudiants</h2>
+        <p class="dash__view-sub" id="viewSub">Liste, ajout et suppression des étudiants inscrits.</p>
+      </header>
+
+      <div class="dash__banner" id="banner" hidden></div>
+
+      <section class="dash__content" id="content">
+        <!-- injecté dynamiquement par admin.js -->
+      </section>
+
+    </main>
+  </div>
+
+<script src="../js/admin.js"></script>
+</body>
+</html>

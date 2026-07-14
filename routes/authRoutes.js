@@ -1,9 +1,10 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';                          // ← AJOUT
 import { getAllUsers } from '../services/userService.js';
 import { getClassesByTeacher } from '../services/teacherClasseService.js';
 import db from '../db/database.js';
 import { logger } from '../utils/logger.js';
-
+import { JWT_SECRET } from '../utils/authMiddleware.js';
 const router = express.Router();
 
 router.post('/login', (req, res) => {
@@ -23,7 +24,16 @@ router.post('/login', (req, res) => {
     return res.status(401).json({ error: 'Pseudo ou mot de passe incorrect' });
   }
 
-  // On construit la réponse selon le rôle, comme dans ton CLI
+  // ← AJOUT : génère le token une seule fois, avant de brancher selon le rôle
+  const token = jwt.sign(
+    { id: user.id, pseudo: user.pseudo, role: user.role },
+    JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+
+  // ← AJOUT : on ne renvoie jamais le mot de passe, même dans la réponse de login
+  const { password: _pwd, ...safeUser } = user;
+
   if (user.role === 'student') {
     const student = db.prepare(`SELECT * FROM students WHERE user_id = ?`).get(user.id);
 
@@ -37,7 +47,8 @@ router.post('/login', (req, res) => {
     return res.json({
       message: `Bienvenue ${student.nom} ${student.prenom} !`,
       role: 'student',
-      user,
+      token,           // ← AJOUT
+      user: safeUser,  // ← MODIF (était juste "user")
       student
     });
 
@@ -56,7 +67,8 @@ router.post('/login', (req, res) => {
     return res.json({
       message: `Bienvenue ${teacher.nom} !`,
       role: 'enseignant',
-      user,
+      token,           // ← AJOUT
+      user: safeUser,  // ← MODIF
       teacher,
       classes
     });
@@ -67,7 +79,8 @@ router.post('/login', (req, res) => {
     return res.json({
       message: `Bienvenue ${user.name} (${user.role}) !`,
       role: user.role,
-      user
+      token,           // ← AJOUT
+      user: safeUser   // ← MODIF
     });
   }
 });

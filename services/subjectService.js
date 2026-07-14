@@ -23,7 +23,7 @@ const createSubject = (nom, teacher_id) => {
         VALUES(?,?)
         `);
 
-  insertSubjects.run(addSubject.nom, addSubject.teacher_id);
+  return insertSubjects.run(addSubject.nom, addSubject.teacher_id);
 };
 
 //LISTE DES MATIERES
